@@ -1,46 +1,121 @@
+import math
 import numpy as np
 import copy
 
-def neldermead(f,x0,step,alpha):
 
+def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma):
+    #Warunki końca:
+    #1) Brak poprawy rozwiązania eps_x
+    #2) Brak poprawy wartości funkcji celu eps_f
+    #3) Max iteracji max_iter
+
+    #INICJALIZACJA
+    # tworzenie dwóch kolejnych punktów na podstawie punktu początkowego x0, step określa początkową
+    # odległość punktów od x0
     f0 = f(x0)
-    dim = len(x0)
-    simplex = [[x0, f0]]
+    N = len(x0)
+    points = [[x0, f0]]
+    prevBEST = f0
 
-    for i in range(dim):
+    for i in range(N):
         x = copy.copy(x0)
         x[i] = x[i] + step
         val = f(x)
-        simplex.append([x, val])
+        points.append([x, val])
 
-    # sortuj punkty
-    simplex.sort(key=lambda x: x[1])
-    best = simplex[0][1]
+    x_vec = np.array([points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]])
+    fval_vec = np.array([points[0][1], points[1][1], points[1][1]])
+    print("INICJALIZACJA - DONE")
+    print("points = " + str(points))
 
-    # centroida
-    xo = [0.] * dim
+    #PETLA GŁÓWNA PROGRAMU
+    iter = 0
+    noImprovCounter = 0
+    while True:
 
-    for vec in simplex[:-1]:
-        for i, c in enumerate(vec[0]):
-            xo[i] = xo[i] + c / (len(simplex) - 1)
+        #Sortuj
+        points.sort(key=lambda x: x[1])
+        best = points[0][1]
+        print("\n")
+        print("SORTOWANIE - DONE")
+        print("NAJLEPSZY PUNKT = " + str(points[0]))
 
-    # odbicie
-    alpha = 1.0
-    xr = xo + alpha * (xo - simplex[-1][0])
-    refl_fval = f(xr)
-    if simplex[0][1] <= refl_fval < simplex[-2][1]:
-        del simplex[-1]
-        simplex.append([xr, refl_fval])
+        #Sprawdź warunki stopu
+        if iter >= max_iter:
+            print("ZADZIAŁAŁ STOP MAX ITER")
+            return [x_vec, fval_vec, iter]
+        iter += 1
 
-    # rozszerzenie
-    gamma = 1.0
-    if refl_fval < simplex[0][1]:
-        xe = xo + gamma * (xo - simplex[-1][0])
-        exp_fval = f(xe)
-        if exp_fval < refl_fval:
-            del simplex[-1]
-            simplex.append([xe, exp_fval])
+        if TolFun < math.fabs(prevBEST - best):
+            noImprovCounter = 0
+            prevBEST = best
         else:
-            del simplex[-1]
-            simplex.append([xr, refl_fval])
+            noImprovCounter += 1
 
+        if noImprovCounter >= TolFunCount:
+            print("ZADZIAŁAŁ STOP NO IMPROVEMENT FVAL")
+            return [x_vec, fval_vec, iter]
+
+
+
+        #OPERACJE ALGORYTMU NELDER-MEAD
+        #1) znalezienie centroidy
+        #2) odbicie
+        #3) rozszerzenie
+        #4) skurczenie
+        #5) zmniejszenie
+
+        # Centroida
+        xo = [0.] * N
+        for vec in points[:-1]:
+            for i, c in enumerate(vec[0]):
+                xo[i] = xo[i] + c / (len(points) - 1)
+
+        print("CENTROIDA - DONE")
+
+        # Odbicie
+        # nadpisywane pod warunkiem, że punkt po odbiciu jest lepszy od najgorszego, ale nie najlepszy
+        xr = xo + alpha * (xo - points[-1][0])
+        refl_fval = f(xr)
+        if points[0][1] <= refl_fval < points[-2][1]:
+            del points[-1]
+            points.append([xr, refl_fval])
+            continue
+
+        # Rozszerzenie
+        # wykonaj jeżeli warunek odbicia nie spełnione
+        # jezeli punkt po odbiciu (xo) jest najlepszy -> przesun go jeszcze dalej
+        # jeżeli poprawiło -> zastępujemy punkt punktem po rozszerzeniu (xe)
+        if refl_fval < points[0][1]:
+            xe = xo + gamma * (xo - points[-1][0])
+            exp_fval = f(xe)
+            if exp_fval < refl_fval:
+                del points[-1]
+                points.append([xe, exp_fval])
+                continue
+            else:
+                del points[-1]
+                points.append([xr, refl_fval])
+                continue
+
+        # Skurczenie
+        # podmień jeżeli punkt po skruczeniu jest lepszy od najgorszego
+        xc = xo + rho * (x0 - points[-1][0])
+        cont_fval = f(xc)
+        if cont_fval < points[-1][1]:
+            del points[-1]
+            points.append([xc, cont_fval])
+            continue
+
+        # Zmniejszenie
+        x1 = points[0][0]
+        temp = []
+        for vec in points:
+            xi = x1 + sigma * (vec[0] - x1)
+            shrink_fval = f(xi)
+            temp.append([xi, shrink_fval])
+        points = temp
+
+        #ROZSZERZ O KOLEJNY WEKTOR ROZWIĄZAŃ
+        x_vec = np.vstack([x_vec, [points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]]])
+        fval_vec = np.vstack([fval_vec, [points[0][1], points[1][1], points[1][1]]])
