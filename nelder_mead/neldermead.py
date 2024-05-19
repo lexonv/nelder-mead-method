@@ -4,10 +4,6 @@ import copy
 
 
 def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma):
-    #Warunki końca:
-    #1) Brak poprawy rozwiązania eps_x
-    #2) Brak poprawy wartości funkcji celu eps_f
-    #3) Max iteracji max_iter
 
     #INICJALIZACJA
     # tworzenie dwóch kolejnych punktów na podstawie punktu początkowego x0, step określa początkową
@@ -23,27 +19,28 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
         val = f(x)
         points.append([x, val])
 
-    x_vec = np.array([points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]])
-    fval_vec = np.array([points[0][1], points[1][1], points[1][1]])
+    x_vec = np.linspace(0, 0, len(x0)*3)
+    fval_vec = np.linspace(0, 0, 3)
     print("INICJALIZACJA - DONE")
-    print("points = " + str(points))
+    print("points = " + str(points) + "\n")
 
     #PETLA GŁÓWNA PROGRAMU
     iter = 0
     noImprovCounter = 0
     while True:
 
+        #Rozszerz wyniki
+        x_vec = np.vstack([x_vec, [points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]]])
+        fval_vec = np.vstack([fval_vec, [points[0][1], points[1][1], points[1][1]]])
+
         #Sortuj
         points.sort(key=lambda x: x[1])
         best = points[0][1]
-        print("\n")
-        print("SORTOWANIE - DONE")
-        print("NAJLEPSZY PUNKT = " + str(points[0]))
 
         #Sprawdź warunki stopu
         if iter >= max_iter:
-            print("ZADZIAŁAŁ STOP MAX ITER")
-            return [x_vec, fval_vec, iter]
+            print("ZADZIAŁAŁ STOP MAX ITER\n")
+            return [x_vec[1:, :], fval_vec[1:, :], iter]
         iter += 1
 
         if TolFun < math.fabs(prevBEST - best):
@@ -53,8 +50,8 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
             noImprovCounter += 1
 
         if noImprovCounter >= TolFunCount:
-            print("ZADZIAŁAŁ STOP NO IMPROVEMENT FVAL")
-            return [x_vec, fval_vec, iter]
+            print("ZADZIAŁAŁ STOP NO IMPROVEMENT FVAL\n")
+            return [x_vec[1:, :], fval_vec[1:, :], iter]
 
 
 
@@ -70,8 +67,6 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
         for vec in points[:-1]:
             for i, c in enumerate(vec[0]):
                 xo[i] = xo[i] + c / (len(points) - 1)
-
-        print("CENTROIDA - DONE")
 
         # Odbicie
         # nadpisywane pod warunkiem, że punkt po odbiciu jest lepszy od najgorszego, ale nie najlepszy
@@ -115,7 +110,3 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
             shrink_fval = f(xi)
             temp.append([xi, shrink_fval])
         points = temp
-
-        #ROZSZERZ O KOLEJNY WEKTOR ROZWIĄZAŃ
-        x_vec = np.vstack([x_vec, [points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]]])
-        fval_vec = np.vstack([fval_vec, [points[0][1], points[1][1], points[1][1]]])
