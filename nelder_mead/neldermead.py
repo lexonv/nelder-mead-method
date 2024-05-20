@@ -29,13 +29,13 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
     noImprovCounter = 0
     while True:
 
-        #Rozszerz wyniki
-        x_vec = np.vstack([x_vec, [points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]]])
-        fval_vec = np.vstack([fval_vec, [points[0][1], points[1][1], points[1][1]]])
-
         #Sortuj
         points.sort(key=lambda x: x[1])
         best = points[0][1]
+
+        #Rozszerz wyniki
+        x_vec = np.vstack([x_vec, [points[0][0][0], points[0][0][1], points[1][0][0], points[1][0][1], points[2][0][0], points[2][0][1]]])
+        fval_vec = np.vstack([fval_vec, [points[0][1], points[1][1], points[1][1]]])
 
         #Sprawdź warunki stopu
         if iter >= max_iter:
