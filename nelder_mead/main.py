@@ -27,15 +27,15 @@ def f2(x):
 
 @zliczajWywolania
 def f3(x):
-    return 2.0*pow(x[0], 2.0) + 1.05*pow(x[0], 4.0) + pow(x[0], 6.0)/6.0 + x[0]*x[1] + pow(x[1], 2.0)
+    return 2.0 * pow(x[0], 2.0) + 1.05 * pow(x[0], 4.0) + pow(x[0], 6.0) / 6.0 + x[0] * x[1] + pow(x[1], 2.0)
 
 
 def ogr1(x):
-    return 1.5 - 0.5*x[0] - x[1]
+    return 1.5 - 0.5 * x[0] - x[1]
 
 
 def ogr2(x):
-    return pow(x[0], 2.0) + 2*x[0] - x[1]
+    return pow(x[0], 2.0) + 2 * x[0] - x[1]
 
 
 def ogr3(x):
@@ -56,8 +56,7 @@ def f3ogr(x):
 
 plt.rcParams.update({'font.size': 16})
 
-
-fun = f2ogr
+fun = f1
 if fun == f1 or fun == f1ogr:
     x0 = np.array([-5, 10], dtype=np.float64)
     x1lim = [-5.5, 5.5]
@@ -74,7 +73,6 @@ else:
     x2lim = [-2.5, 5.5]
     funWykres = f3
 
-
 step = 0.1
 TolFun = 1e-6
 TolFunCount = 10
@@ -84,16 +82,14 @@ gamma = 1.0
 rho = 0.5
 sigma = 0.5
 
-
 [x_vec, fval_vec, iteracje, czas] = neldermead(fun, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma)
 
-
 print("---- Znaleziono punkt ----")
-print("Minimum: x1 = "+str(round(x_vec[-1, 0], 3))+", x2 = "+str(round(x_vec[-1, 1], 3))+", f(x1,x2) = "+str(round(funWykres([x_vec[-1, 0], x_vec[-1, 1]]), 3)))
+print("Minimum: x1 = " + str(round(x_vec[-1, 0], 3)) + ", x2 = " + str(round(x_vec[-1, 1], 3)) + ", f(x1,x2) = " + str(
+    round(funWykres([x_vec[-1, 0], x_vec[-1, 1]]), 3)))
 print("Iteracje = " + str(iteracje))
 print("Ilość wywołań = " + str(funWykres.funcCount))
-print("Czas wykonywania programu: "+str(round(czas, 3)) + " [s]")
-
+print("Czas wykonywania programu: " + str(round(czas, 3)) + " [s]")
 
 # Wykres z ograniczeniami (jeżeli są)
 fig6 = plt.subplot()
@@ -112,11 +108,10 @@ if fun == f1ogr:
     plt.plot(x1, 1.5 - 0.5 * x1, linestyle='dashed', color='r')
 elif fun == f2ogr:
     plt.plot(x1, pow(x1, 2.0) + 2 * x1, linestyle='dashed', color='r')
+    plt.fill_between(x1, pow(x1, 2.0) + 2 * x1, x2lim[1], color='r', alpha=0.2)
 elif fun == f3ogr:
     circle = plt.Circle((0.0, 0.0), 1.0, linestyle='dashed', color='r', fill=True, alpha=0.2)
     fig6.add_artist(circle)
 plt.show()
 
-
 wykresy(funWykres, x1lim, x2lim, x_vec, fval_vec)
-
