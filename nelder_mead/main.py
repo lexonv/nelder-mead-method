@@ -1,8 +1,9 @@
 import numpy as np
 import functools
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, animation
 from neldermead import neldermead
 from wykresy import wykresy
+from matplotlib.animation import PillowWriter
 
 
 def zliczajWywolania(func):
@@ -57,7 +58,7 @@ def f3ogr(x):
     return f3(x) + 1e6 * np.amax([0.0, pow(ogr3(x), 3.0)])
 
 
-fun = f2ogr
+fun = f1ogr
 if fun == f1 or fun == f1ogr:
     x0 = np.array([-5, 10], dtype=np.float64)
     x1lim = [-5.5, 5.5]
@@ -66,7 +67,7 @@ if fun == f1 or fun == f1ogr:
 elif fun == f2 or fun == f2ogr:
     x0 = np.array([-10, 10], dtype=np.float64)
     x1lim = [-11, 5.5]
-    x2lim = [-3.0, 11]
+    x2lim = [-3.0, 12]
     funWykres = f2
 else:
     x0 = np.array([-5, 5], dtype=np.float64)
@@ -87,12 +88,12 @@ sigma = 0.5
 
 [x_vec, fval_vec, iteracje] = neldermead(fun, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma)
 
+
 print("---- Znaleziono punkt ----")
 print("Minimum: x1 = "+str(round(x_vec[-1, 0], 3))+", x2 = "+str(round(x_vec[-1, 1], 3))+", f(x1,x2) = "+str(round(funWykres([x_vec[-1, 0], x_vec[-1, 1]]), 3)))
 print("Iteracje = " + str(iteracje))
 print("Ilość wywołań = " + str(fun.funcCount))
 
-# wykresy(funWykres, x1lim, x2lim, x_vec, fval_vec)
 
 # Wykres z ograniczeniami (jeżeli są)
 fig6 = plt.subplot()
@@ -112,6 +113,10 @@ if fun == f1ogr:
 elif fun == f2ogr:
     plt.plot(x1, pow(x1, 2.0) + 2 * x1, linestyle='dashed', color='r')
 elif fun == f3ogr:
-    circle = plt.Circle((0.0, 0.0), 1.0, linestyle='dashed', color='r', fill=False)
+    circle = plt.Circle((0.0, 0.0), 1.0, linestyle='dashed', color='r', fill=True, alpha=0.2)
     fig6.add_artist(circle)
 plt.show()
+
+
+wykresy(funWykres, x1lim, x2lim, x_vec, fval_vec)
+
