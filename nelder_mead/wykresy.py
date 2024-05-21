@@ -43,7 +43,7 @@ def wykresy(f, x1lim, x2lim, x_vec, fval_vec):
     plt.plot(x1, x2, marker='*', markersize=2)
     plt.xlabel('x1')
     plt.ylabel('x2')
-    plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='o', linestyle='none', markersize=10)
+    plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='*', color='orange', linestyle='none', markersize=10)
 
     #Wykres przestrzenny
     fig5 = plt.figure()
@@ -52,7 +52,7 @@ def wykresy(f, x1lim, x2lim, x_vec, fval_vec):
     ax.set_xlabel('X1')
     ax.set_ylabel('X2')
     ax.set_zlabel('Z')
-    ax.plot3D(x_vec[-1, 0], x_vec[-1, 1], f([x_vec[-1, 0], x_vec[-1, 1]]), marker='o', linestyle='none', markersize=10)
+    ax.plot3D(x_vec[-1, 0], x_vec[-1, 1], f([x_vec[-1, 0], x_vec[-1, 1]]), marker='*', color='orange', linestyle='none', markersize=10)
 
     #Animacja
     animacja(f,x_vec,x1lim,x2lim)

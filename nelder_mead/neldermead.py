@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import time
 
 
 def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma):
@@ -11,6 +12,7 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
     N = len(x0)
     points = [[x0, f0]]
     prevBEST = f0
+    start = time.time()
 
     for i in range(N):
         x = copy.copy(x0)
@@ -39,7 +41,9 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
         #Sprawdź warunki stopu
         if iter >= max_iter:
             print("ZADZIAŁAŁ STOP MAX ITER\n")
-            return [x_vec[1:, :], fval_vec[1:, :], iter]
+            end = time.time()
+            t = end - start
+            return [x_vec[1:, :], fval_vec[1:, :], iter, t]
         iter += 1
 
         if TolFun < np.fabs(prevBEST - best):
@@ -50,7 +54,9 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
 
         if noImprovCounter >= TolFunCount:
             print("ZADZIAŁAŁ STOP NO IMPROVEMENT FVAL\n")
-            return [x_vec[1:, :], fval_vec[1:, :], iter]
+            end = time.time()
+            t = end - start
+            return [x_vec[1:, :], fval_vec[1:, :], iter, t]
 
 
 
