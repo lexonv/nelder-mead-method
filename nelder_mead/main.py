@@ -49,15 +49,15 @@ def f1ogr(x):
 
 @zliczajWywolania
 def f2ogr(x):
-    return f2(x) + 1e1 * max(0.0, pow(ogr2(x), 2.0))
+    return f2(x) + 1e3 * max(0.0, pow(ogr2(x), 3.0))
 
 
 @zliczajWywolania
 def f3ogr(x):
-    return f3(x) + 1e3 * max(0.0, pow(ogr3(x), 2.0))
+    return f3(x) + 1e6 * np.amax([0.0, pow(ogr3(x), 3.0)])
 
 
-fun = f3ogr
+fun = f2ogr
 if fun == f1 or fun == f1ogr:
     x0 = np.array([-5, 10], dtype=np.float64)
     x1lim = [-5.5, 5.5]
@@ -83,25 +83,25 @@ alpha = 2.0
 gamma = 1.0
 rho = 0.5
 sigma = 0.5
-levels = 20
 
 
 [x_vec, fval_vec, iteracje] = neldermead(fun, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, sigma)
 
 print("---- Znaleziono punkt ----")
-print("Minimum: x1 = "+str(round(x_vec[-1, 0], 3))+", x2 = "+str(round(x_vec[-1, 1], 3))+", f(x1,x2) = "+str(round(fval_vec[-1, 0], 3)))
+print("Minimum: x1 = "+str(round(x_vec[-1, 0], 3))+", x2 = "+str(round(x_vec[-1, 1], 3))+", f(x1,x2) = "+str(round(funWykres([x_vec[-1, 0], x_vec[-1, 1]]), 3)))
 print("Iteracje = " + str(iteracje))
 print("Ilość wywołań = " + str(fun.funcCount))
 
-# wykresy(funWykres, x1lim, x2lim, x_vec, fval_vec, levels)
+# wykresy(funWykres, x1lim, x2lim, x_vec, fval_vec)
 
 # Wykres z ograniczeniami (jeżeli są)
-fig6 = plt.figure()
+fig6 = plt.subplot()
 x1 = np.linspace(x1lim[0], x1lim[1], 100)
 x2 = np.linspace(x2lim[0], x2lim[1], 100)
 X1, X2 = np.meshgrid(x1, x2)
 Z = funWykres([X1, X2])
-plt.contour(X1, X2, Z, np.linspace(1, 100, levels))
+plt.contour(X1, X2, Z, np.linspace(1, 100))
+plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='*', linestyle='none', markersize=10, color='r')
 plt.xlabel("X1")
 plt.ylabel("X2")
 plt.title("Wykres konturowy z ograniczeniami")
@@ -109,11 +109,9 @@ plt.xlim(x1lim[0], x1lim[1])
 plt.ylim(x2lim[0], x2lim[1])
 if fun == f1ogr:
     plt.plot(x1, 1.5 - 0.5 * x1, linestyle='dashed', color='r')
-    plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='*', linestyle='none', markersize=5)
 elif fun == f2ogr:
     plt.plot(x1, pow(x1, 2.0) + 2 * x1, linestyle='dashed', color='r')
-    plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='*', linestyle='none', markersize=5)
 elif fun == f3ogr:
-    plt.plot(x1, np.sqrt(np.fabs(pow(x1, 2.0) - 1.0)), linestyle='dashed', color='r')
-    plt.plot(x_vec[-1, 0], x_vec[-1, 1], marker='*', linestyle='none', markersize=5)
+    circle = plt.Circle((0.0, 0.0), 1.0, linestyle='dashed', color='r', fill=False)
+    fig6.add_artist(circle)
 plt.show()

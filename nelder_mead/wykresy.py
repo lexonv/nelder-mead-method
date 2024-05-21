@@ -1,8 +1,10 @@
+import matplotlib
+matplotlib.use("TkAgg")
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def wykresy(f, x1lim, x2lim, x_vec, fval_vec, levels):
+def wykresy(f, x1lim, x2lim, x_vec, fval_vec):
     x1 = np.linspace(x1lim[0], x1lim[1], 100)
     x2 = np.linspace(x2lim[0], x2lim[1], 100)
     X1, X2 = np.meshgrid(x1, x2)
@@ -15,13 +17,20 @@ def wykresy(f, x1lim, x2lim, x_vec, fval_vec, levels):
     # Działanie algorytmu
     fig1 = plt.figure()
     for i in range(N):
-        plt.contour(X1, X2, Z, np.linspace(1, 100, levels))
+        plt.contour(X1, X2, Z, np.linspace(0, 500, 500))
         plt.xlabel('X1')
         plt.ylabel('X2')
         plt.title('Działanie algorytmu Nelder-Meada')
-        plt.plot([x_vec[i, 0], x_vec[i, 2], x_vec[i, 4], x_vec[i, 0]], [x_vec[i, 1], x_vec[i, 3], x_vec[i, 5], x_vec[i, 1]])
-        plt.show()
-        plt.pause(0.25)
+        posxmin = min(x_vec[i, 0], x_vec[i, 2], x_vec[i, 4])
+        posxmax = min(x_vec[i, 0], x_vec[i, 2], x_vec[i, 4])
+        posymin = max(x_vec[i, 1], x_vec[i, 3], x_vec[i, 5])
+        posymax = max(x_vec[i, 1], x_vec[i, 3], x_vec[i, 5])
+        plt.xlim(posxmin-0.5, posxmax+0.5)
+        plt.ylim(posymin-0.5, posymax+0.5)
+        plt.plot([x_vec[i, 0], x_vec[i, 2], x_vec[i, 4], x_vec[i, 0]], [x_vec[i, 1], x_vec[i, 3], x_vec[i, 5], x_vec[i, 1]], color='r', linewidth=2)
+        plt.show(block=False)
+        plt.pause(0.0001)
+        plt.close('all')
 
     # Zbieżność wartości funkcji celu
     fig2 = plt.figure()
@@ -61,4 +70,3 @@ def wykresy(f, x1lim, x2lim, x_vec, fval_vec, levels):
     ax.plot3D(x_vec[-1, 0], x_vec[-1, 1], f([x_vec[-1, 0], x_vec[-1, 1]]), marker='o', linestyle='none', markersize=10)
 
     plt.show()
-

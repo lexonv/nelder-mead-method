@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import copy
 
@@ -43,7 +42,7 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
             return [x_vec[1:, :], fval_vec[1:, :], iter]
         iter += 1
 
-        if TolFun < math.fabs(prevBEST - best):
+        if TolFun < np.fabs(prevBEST - best):
             noImprovCounter = 0
             prevBEST = best
         else:
