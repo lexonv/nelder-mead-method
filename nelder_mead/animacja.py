@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt, animation
+from matplotlib.animation import PillowWriter
 
 
 def animacja(fun, x_vec, x1lim, x2lim):
@@ -12,7 +13,7 @@ def animacja(fun, x_vec, x1lim, x2lim):
 
     def animate(i):
         ax.clear()
-        plt.contour(X1, X2, Z, np.linspace(0, 500, 100))
+        plt.contour(X1, X2, Z, np.linspace(1, 100, 10))
         p1 = x_vec[i, 0]
         p2 = x_vec[i, 1]
         p3 = x_vec[i, 2]
@@ -26,6 +27,10 @@ def animacja(fun, x_vec, x1lim, x2lim):
         ax.set_title('Animacja algorytmu Neldera-Meada')
         ax.set_xlim(x1lim)
         ax.set_ylim(x2lim)
+        ax.grid()
 
     anim = animation.FuncAnimation(fig=fig, func=animate, frames=len(x_vec), interval=200)
+    # Save the animation as an animated GIF
+    # anim.save("przebieg.gif", dpi=300,
+    #          writer=PillowWriter(fps=5))
     plt.show()

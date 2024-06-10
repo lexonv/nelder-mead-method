@@ -75,7 +75,7 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
 
         # Odbicie
         # nadpisywane pod warunkiem, że punkt po odbiciu jest lepszy od najgorszego, ale nie najlepszy
-        xr = xo + alpha * (xo - points[-1][0])
+        xr = xo + alpha * (xo - np.array(points[-1][0]))
         refl_fval = f(xr)
         if points[0][1] <= refl_fval < points[-2][1]:
             del points[-1]
@@ -83,11 +83,11 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
             continue
 
         # Rozszerzenie
-        # wykonaj jeżeli warunek odbicia nie spełnione
+        # wykonaj jeżeli warunek odbicia nie spełniony
         # jezeli punkt po odbiciu (xo) jest najlepszy -> przesun go jeszcze dalej
         # jeżeli poprawiło -> zastępujemy punkt punktem po rozszerzeniu (xe)
         if refl_fval < points[0][1]:
-            xe = xo + gamma * (xo - points[-1][0])
+            xe = xo + gamma * (xo - np.array(points[-1][0]))
             exp_fval = f(xe)
             if exp_fval < refl_fval:
                 del points[-1]
@@ -100,7 +100,7 @@ def neldermead(f, x0, step, TolFun, TolFunCount, max_iter, alpha, gamma, rho, si
 
         # Skurczenie
         # podmień jeżeli punkt po skruczeniu jest lepszy od najgorszego
-        xc = xo + rho * (x0 - points[-1][0])
+        xc = xo + rho * (x0 - np.array(points[-1][0]))
         cont_fval = f(xc)
         if cont_fval < points[-1][1]:
             del points[-1]
